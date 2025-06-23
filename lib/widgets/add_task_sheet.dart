@@ -32,6 +32,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         payload: 'Tarea: $text',
       );
 
+      // Si se ha seleccionado una fecha y hora se programa la notificación de la tarea
       if (_selectedDate != null && _selectedTime != null) {
         final scheduledDateTime = DateTime(
           _selectedDate!.year,
@@ -41,7 +42,9 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
           _selectedTime!.minute,
         );
 
-        notificationId = DateTime.now().millisecondsSinceEpoch.remainder(100000);
+        // Genera un ID único para la notificación de la tarea programada
+        notificationId =
+            DateTime.now().millisecondsSinceEpoch.remainder(100000);
 
         await NotificationService.scheduleNotification(
           title: 'Recordatorio de tarea',
@@ -55,8 +58,9 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
       Provider.of<TaskProvider>(context, listen: false).addTask(
         text,
         dueDate: _selectedDate,
-        dueTime: _selectedTime,
-        notificationId: notificationId,
+        dueTime: _selectedTime, // Guarda la hora seleccionada en la tarea
+        notificationId:
+            notificationId, // Guarda el ID de la notificación en la tarea
       );
 
       Navigator.pop(context);
@@ -102,7 +106,8 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Agregar nueva tarea', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('Agregar nueva tarea',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           TextField(
             controller: _controller,
@@ -122,7 +127,8 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
               ),
               const SizedBox(width: 10),
               if (_selectedDate != null)
-                Text('${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'),
+                Text(
+                    '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'),
             ],
           ),
           const SizedBox(height: 12),
@@ -135,7 +141,8 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
               const SizedBox(width: 10),
               const Text('Hora: '),
               if (_selectedTime != null)
-                Text('${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'),
+                Text(
+                    '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'),
             ],
           ),
           const SizedBox(height: 12),

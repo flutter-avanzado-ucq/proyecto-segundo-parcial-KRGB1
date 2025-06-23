@@ -15,12 +15,13 @@ class EditTaskSheet extends StatefulWidget {
 class _EditTaskSheetState extends State<EditTaskSheet> {
   late TextEditingController _controller;
   DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
+  TimeOfDay? _selectedTime; // Se almacena la hora de la tarea editada
 
   @override
   void initState() {
     super.initState();
-    final task = Provider.of<TaskProvider>(context, listen: false).tasks[widget.index];
+    final task =
+        Provider.of<TaskProvider>(context, listen: false).tasks[widget.index];
     _controller = TextEditingController(text: task.title);
     _selectedDate = task.dueDate;
     _selectedTime = task.dueTime ?? const TimeOfDay(hour: 8, minute: 0);
@@ -31,8 +32,11 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
     if (newTitle.isNotEmpty) {
       int? notificationId;
 
-      final task = Provider.of<TaskProvider>(context, listen: false).tasks[widget.index];
+      final task =
+          Provider.of<TaskProvider>(context, listen: false).tasks[widget.index];
 
+      // Antes de programar una nueva notificación se cancela la anterior usando notificationId
+      // asi se evita que se acumulen notificaciones
       if (task.notificationId != null) {
         await NotificationService.cancelNotification(task.notificationId!);
       }
@@ -43,6 +47,7 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
         payload: 'Tarea actualizada: $newTitle',
       );
 
+      //
       if (_selectedDate != null && _selectedTime != null) {
         final scheduledDateTime = DateTime(
           _selectedDate!.year,
@@ -52,7 +57,8 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
           _selectedTime!.minute,
         );
 
-        notificationId = DateTime.now().millisecondsSinceEpoch.remainder(100000);
+        notificationId =
+            DateTime.now().millisecondsSinceEpoch.remainder(100000);
 
         await NotificationService.scheduleNotification(
           title: 'Recordatorio de tarea actualizada',
@@ -67,8 +73,10 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
         widget.index,
         newTitle,
         newDate: _selectedDate,
-        newTime: _selectedTime,
-        notificationId: notificationId,
+        newTime:
+            _selectedTime, // Guarda la nueva hora seleccionada en la tarea editada
+        notificationId:
+            notificationId, // Guarda el nuevo ID de la notificación en la tarea editada
       );
 
       Navigator.pop(context);
@@ -114,7 +122,8 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Editar tarea', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('Editar tarea',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           TextField(
             controller: _controller,
@@ -134,7 +143,8 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
               ),
               const SizedBox(width: 10),
               if (_selectedDate != null)
-                Text('${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'),
+                Text(
+                    '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'),
             ],
           ),
           const SizedBox(height: 12),
@@ -147,7 +157,8 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
               const SizedBox(width: 10),
               const Text('Hora: '),
               if (_selectedTime != null)
-                Text('${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'),
+                Text(
+                    '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'),
             ],
           ),
           const SizedBox(height: 12),

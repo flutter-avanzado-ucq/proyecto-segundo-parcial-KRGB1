@@ -1,0 +1,2 @@
+C:/Users/Zbook/Desktop/flutter practicas Parcial 2/proyecto-flutter-nuevo/proyecto-segundo-parcial-KRGB1/android/app/.cxx/Debug/5w5gdk5u/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/Zbook/Desktop/flutter practicas Parcial 2/proyecto-flutter-nuevo/proyecto-segundo-parcial-KRGB1/android/app/.cxx/Debug/5w5gdk5u/x86_64/CMakeFiles/rebuild_cache.dir

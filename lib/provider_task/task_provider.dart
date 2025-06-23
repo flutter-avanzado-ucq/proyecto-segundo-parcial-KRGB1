@@ -5,8 +5,10 @@ class Task {
   String title;
   bool done;
   DateTime? dueDate;
-  TimeOfDay? dueTime;
-  int? notificationId;
+  TimeOfDay?
+      dueTime; // Manejo de la hora (dueTime): almacena la hora de vencimiento de la tarea
+  int?
+      notificationId; // Manejo de la notificación (notificationId): almacena el ID de la notificación asociada a la tarea
 
   Task({
     required this.title,
@@ -22,13 +24,16 @@ class TaskProvider with ChangeNotifier {
 
   List<Task> get tasks => List.unmodifiable(_tasks);
 
-  void addTask(String title, {DateTime? dueDate, TimeOfDay? dueTime, int? notificationId}) {
-    _tasks.insert(0, Task(
-      title: title,
-      dueDate: dueDate,
-      dueTime: dueTime,
-      notificationId: notificationId,
-    ));
+  void addTask(String title,
+      {DateTime? dueDate, TimeOfDay? dueTime, int? notificationId}) {
+    _tasks.insert(
+        0,
+        Task(
+          title: title,
+          dueDate: dueDate,
+          dueTime: dueTime,
+          notificationId: notificationId,
+        ));
     notifyListeners();
   }
 
@@ -38,6 +43,8 @@ class TaskProvider with ChangeNotifier {
   }
 
   void removeTask(int index) {
+    // Cancela la notificacion de una tarea al eliminarla
+    //para evitar notificaciones de tareas que ya no existen
     final task = _tasks[index];
     if (task.notificationId != null) {
       NotificationService.cancelNotification(task.notificationId!);
@@ -46,7 +53,8 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateTask(int index, String newTitle, {DateTime? newDate, TimeOfDay? newTime, int? notificationId}) {
+  void updateTask(int index, String newTitle,
+      {DateTime? newDate, TimeOfDay? newTime, int? notificationId}) {
     final task = _tasks[index];
 
     // Si ya tenía una notificación previa, cancelar

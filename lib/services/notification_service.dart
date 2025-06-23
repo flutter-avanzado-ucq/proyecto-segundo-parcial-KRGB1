@@ -37,7 +37,8 @@ class NotificationService {
     }
 
     await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
@@ -83,10 +84,11 @@ class NotificationService {
     const details = NotificationDetails(android: androidDetails);
 
     await _notificationsPlugin.zonedSchedule(
-      notificationId,
+      notificationId, // Usar notificationId para identificar la notificación programada
       title,
       body,
-      tz.TZDateTime.from(scheduledDate, tz.local),
+      tz.TZDateTime.from(scheduledDate,
+          tz.local), // Se usa la hora programada para que la notificacion aparezca en la hora programada
       details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       payload: payload,
@@ -94,6 +96,7 @@ class NotificationService {
   }
 
   static Future<void> cancelNotification(int id) async {
+    // Se cancela la notificación usando el ID proporcionado
     await _notificationsPlugin.cancel(id);
   }
 }
