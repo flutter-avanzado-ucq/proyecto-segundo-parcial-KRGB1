@@ -15,7 +15,7 @@ class EditTaskSheet extends StatefulWidget {
 class _EditTaskSheetState extends State<EditTaskSheet> {
   late TextEditingController _controller;
   DateTime? _selectedDate;
-  TimeOfDay? _selectedTime; // Se almacena la hora de la tarea editada
+  TimeOfDay? _selectedTime;
 
   @override
   void initState() {
@@ -24,19 +24,23 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
         Provider.of<TaskProvider>(context, listen: false).tasks[widget.index];
     _controller = TextEditingController(text: task.title);
     _selectedDate = task.dueDate;
-    _selectedTime = task.dueTime ?? const TimeOfDay(hour: 8, minute: 0);
+
+    if (task.dueDate != null) {
+      _selectedTime = TimeOfDay.fromDateTime(task.dueDate!);
+    } else {
+      _selectedTime = const TimeOfDay(hour: 8, minute: 0);
+    }
   }
 
   void _submit() async {
     final newTitle = _controller.text.trim();
     if (newTitle.isNotEmpty) {
       int? notificationId;
+      DateTime? finalDueDate;
 
       final task =
           Provider.of<TaskProvider>(context, listen: false).tasks[widget.index];
 
-      // Antes de programar una nueva notificación se cancela la anterior usando notificationId
-      // asi se evita que se acumulen notificaciones
       if (task.notificationId != null) {
         await NotificationService.cancelNotification(task.notificationId!);
       }
@@ -47,9 +51,8 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
         payload: 'Tarea actualizada: $newTitle',
       );
 
-      //
       if (_selectedDate != null && _selectedTime != null) {
-        final scheduledDateTime = DateTime(
+        finalDueDate = DateTime(
           _selectedDate!.year,
           _selectedDate!.month,
           _selectedDate!.day,
@@ -63,20 +66,19 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
         await NotificationService.scheduleNotification(
           title: 'Recordatorio de tarea actualizada',
           body: 'No olvides: $newTitle',
-          scheduledDate: scheduledDateTime,
-          payload: 'Tarea actualizada: $newTitle para $scheduledDateTime',
+          scheduledDate: finalDueDate,
+          payload: 'Tarea actualizada: $newTitle para $finalDueDate',
           notificationId: notificationId,
         );
       }
 
+      // Integración Hive: actualizar la tarea en Provider + Hive
       Provider.of<TaskProvider>(context, listen: false).updateTask(
         widget.index,
         newTitle,
-        newDate: _selectedDate,
-        newTime:
-            _selectedTime, // Guarda la nueva hora seleccionada en la tarea editada
-        notificationId:
-            notificationId, // Guarda el nuevo ID de la notificación en la tarea editada
+        newDate: finalDueDate ??
+            _selectedDate, // Integración Hive: se pasa la fecha completa
+        notificationId: notificationId,
       );
 
       Navigator.pop(context);

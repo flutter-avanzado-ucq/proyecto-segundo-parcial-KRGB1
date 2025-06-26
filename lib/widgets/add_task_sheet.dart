@@ -25,6 +25,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
       int? notificationId;
+      DateTime? finalDueDate;
 
       await NotificationService.showImmediateNotification(
         title: 'Nueva tarea',
@@ -32,9 +33,8 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         payload: 'Tarea: $text',
       );
 
-      // Si se ha seleccionado una fecha y hora se programa la notificación de la tarea
       if (_selectedDate != null && _selectedTime != null) {
-        final scheduledDateTime = DateTime(
+        finalDueDate = DateTime(
           _selectedDate!.year,
           _selectedDate!.month,
           _selectedDate!.day,
@@ -42,25 +42,24 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
           _selectedTime!.minute,
         );
 
-        // Genera un ID único para la notificación de la tarea programada
         notificationId =
             DateTime.now().millisecondsSinceEpoch.remainder(100000);
 
         await NotificationService.scheduleNotification(
           title: 'Recordatorio de tarea',
           body: 'No olvides: $text',
-          scheduledDate: scheduledDateTime,
-          payload: 'Tarea programada: $text para $scheduledDateTime',
+          scheduledDate: finalDueDate,
+          payload: 'Tarea programada: $text para $finalDueDate',
           notificationId: notificationId,
         );
       }
 
+      // Integración Hive: guardar la tarea en Provider + Hive
       Provider.of<TaskProvider>(context, listen: false).addTask(
         text,
-        dueDate: _selectedDate,
-        dueTime: _selectedTime, // Guarda la hora seleccionada en la tarea
-        notificationId:
-            notificationId, // Guarda el ID de la notificación en la tarea
+        dueDate: finalDueDate ??
+            _selectedDate, // Integración Hive: se pasa la fecha completa
+        notificationId: notificationId,
       );
 
       Navigator.pop(context);

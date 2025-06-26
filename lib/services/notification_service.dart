@@ -16,6 +16,7 @@ class NotificationService {
       iOS: iosSettings,
     );
 
+    // Inicialización de zonas horarias (necesario para notificaciones programadas)
     tz.initializeTimeZones();
 
     await _notificationsPlugin.initialize(
@@ -26,7 +27,7 @@ class NotificationService {
 
   static void _onNotificationResponse(NotificationResponse response) {
     if (response.payload != null) {
-      print('🔔 Payload: ${response.payload}');
+      print('Payload: ${response.payload}');
     }
   }
 
@@ -84,11 +85,10 @@ class NotificationService {
     const details = NotificationDetails(android: androidDetails);
 
     await _notificationsPlugin.zonedSchedule(
-      notificationId, // Usar notificationId para identificar la notificación programada
+      notificationId,
       title,
       body,
-      tz.TZDateTime.from(scheduledDate,
-          tz.local), // Se usa la hora programada para que la notificacion aparezca en la hora programada
+      tz.TZDateTime.from(scheduledDate, tz.local),
       details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       payload: payload,
@@ -96,7 +96,6 @@ class NotificationService {
   }
 
   static Future<void> cancelNotification(int id) async {
-    // Se cancela la notificación usando el ID proporcionado
     await _notificationsPlugin.cancel(id);
   }
 }
