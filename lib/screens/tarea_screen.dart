@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animaciones_notificaciones/provider_task/theme_provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import '../widgets/card_tarea.dart';
 import '../widgets/header.dart';
 import '../widgets/add_task_sheet.dart';
-import '../provider_task/task_provider.dart';
+import '../provider_task/task_provider.dart'; // Nuevo import
+
+// Importar AppLocalizations generado
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -46,8 +50,31 @@ class _TaskScreenState extends State<TaskScreen>
   @override
   Widget build(BuildContext context) {
     final taskProvider = context.watch<TaskProvider>();
+    final localizations =
+        AppLocalizations.of(context)!; // Obtener localización actual
 
     return Scaffold(
+      appBar: AppBar(
+        // Usar traducción en el título
+        title: Text(localizations.appTitle),
+        actions: [
+          // IconButton para cambiar tema claro/oscuro
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return IconButton(
+                icon: Icon(
+                  themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                ),
+                // Usar traducción en el tooltip
+                tooltip: localizations.changeTheme,
+                onPressed: () {
+                  themeProvider.toggleTheme();
+                },
+              );
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -72,20 +99,26 @@ class _TaskScreenState extends State<TaskScreen>
                             onDismissed: (_) => taskProvider.removeTask(index),
                             background: Container(
                               alignment: Alignment.centerRight,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
                               margin: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.red.shade300,
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child:
-                                  const Icon(Icons.delete, color: Colors.white),
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                              ),
                             ),
                             child: TaskCard(
-                              key: ValueKey(task
-                                  .key), // Integración Hive: uso de task.key
+                              key: ValueKey(
+                                task.key,
+                              ), // Integración Hive: uso de task.key
                               title: task.title,
                               isDone: task.done,
                               dueDate: task.dueDate,
@@ -111,9 +144,7 @@ class _TaskScreenState extends State<TaskScreen>
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddTaskSheet,
         backgroundColor: Colors.pinkAccent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: const Icon(Icons.calendar_today),
       ),
     );

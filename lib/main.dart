@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animaciones_notificaciones/models/task_model.dart'
+    as task_model;
 // Integración Hive: importación de Hive Flutter
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -6,12 +8,16 @@ import 'screens/tarea_screen.dart';
 import 'tema/tema_app.dart';
 import 'package:provider/provider.dart';
 import 'provider_task/task_provider.dart';
+import 'provider_task/theme_provider.dart'; // NUEVO
 
 // Importar modelo para Hive
-import 'models/task_model.dart';
 
 // Importar el servicio de notificaciones
 import 'services/notification_service.dart';
+
+// NUEVO: Importar AppLocalizations generado
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   // Asegura que Flutter esté inicializado
@@ -21,10 +27,10 @@ void main() async {
   await Hive.initFlutter();
 
   // Integración Hive: registro del adapter para Task
-  Hive.registerAdapter(TaskAdapter());
+  Hive.registerAdapter(task_model.TaskAdapter());
 
   // Integración Hive: apertura de la caja tasksBox
-  await Hive.openBox<Task>('tasksBox');
+  await Hive.openBox<task_model.Task>('tasksBox');
 
   // Inicializar notificaciones
   await NotificationService.initializeNotifications();
@@ -34,8 +40,11 @@ void main() async {
 
   // Iniciar la app
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => TaskProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()), // ✅ NUEVO
+      ],
       child: const MyApp(),
     ),
   );
@@ -46,11 +55,32 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Tareas Pro',
-      theme: AppTheme.theme,
-      home: const TaskScreen(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title:
+              AppLocalizations.of(context)!.appTitle, // <-- internacionalizado
+          theme: AppTheme.theme,
+          darkTheme: ThemeData.dark(),
+          themeMode:
+              themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+
+          // NUEVO: Configuración de internacionalización
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'), // Inglés
+            Locale('es'), // Español
+          ],
+
+          home: const TaskScreen(),
+        );
+      },
     );
   }
 }

@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import '../provider_task/task_provider.dart';
 import '../services/notification_service.dart';
 
+// Importar AppLocalizations generado
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class EditTaskSheet extends StatefulWidget {
   final int index;
 
@@ -23,7 +26,8 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
     final task =
         Provider.of<TaskProvider>(context, listen: false).tasks[widget.index];
     _controller = TextEditingController(text: task.title);
-    _selectedDate = task.dueDate;
+    _selectedDate =
+        task.dueDate; // practica: se carga la FECHA y HORA actuales de la notificación
 
     if (task.dueDate != null) {
       _selectedTime = TimeOfDay.fromDateTime(task.dueDate!);
@@ -34,6 +38,7 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
 
   void _submit() async {
     final newTitle = _controller.text.trim();
+    final localizations = AppLocalizations.of(context)!;
     if (newTitle.isNotEmpty) {
       int? notificationId;
       DateTime? finalDueDate;
@@ -46,10 +51,12 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
       }
 
       await NotificationService.showImmediateNotification(
-        title: 'Tarea actualizada',
-        body: 'Has actualizado la tarea: $newTitle',
-        payload: 'Tarea actualizada: $newTitle',
+        title: localizations.taskUpdated,
+        body: localizations.taskUpdatedMsg(newTitle),
+        payload: localizations.updatedTaskPayload(newTitle),
       );
+      if (!mounted) return;
+      Navigator.pop(context);
 
       if (_selectedDate != null && _selectedTime != null) {
         finalDueDate = DateTime(
@@ -60,28 +67,28 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
           _selectedTime!.minute,
         );
 
-        notificationId =
-            DateTime.now().millisecondsSinceEpoch.remainder(100000);
+        notificationId = DateTime.now().millisecondsSinceEpoch.remainder(
+          100000,
+        );
 
         await NotificationService.scheduleNotification(
-          title: 'Recordatorio de tarea actualizada',
-          body: 'No olvides: $newTitle',
+          title: localizations.updatedTaskReminder,
+          body: localizations.doNotForget(newTitle),
           scheduledDate: finalDueDate,
-          payload: 'Tarea actualizada: $newTitle para $finalDueDate',
+          payload: localizations.updatedTaskPayloadWithDate(
+            newTitle,
+            finalDueDate.toString(),
+          ),
           notificationId: notificationId,
         );
       }
 
-      // Integración Hive: actualizar la tarea en Provider + Hive
       Provider.of<TaskProvider>(context, listen: false).updateTask(
         widget.index,
         newTitle,
-        newDate: finalDueDate ??
-            _selectedDate, // Integración Hive: se pasa la fecha completa
+        newDate: finalDueDate ?? _selectedDate,
         notificationId: notificationId,
       );
-
-      Navigator.pop(context);
     }
   }
 
@@ -114,6 +121,8 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom + 20,
@@ -124,15 +133,17 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Editar tarea',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            localizations.editTaskTitle,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 12),
           TextField(
             controller: _controller,
             autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Título',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: localizations.titleLabel,
+              border: const OutlineInputBorder(),
             ),
             onSubmitted: (_) => _submit(),
           ),
@@ -141,12 +152,13 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
             children: [
               ElevatedButton(
                 onPressed: _pickDate,
-                child: const Text('Cambiar fecha'),
+                child: Text(localizations.changeDate),
               ),
               const SizedBox(width: 10),
               if (_selectedDate != null)
                 Text(
-                    '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'),
+                  '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
+                ),
             ],
           ),
           const SizedBox(height: 12),
@@ -154,20 +166,21 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
             children: [
               ElevatedButton(
                 onPressed: _pickTime,
-                child: const Text('Cambiar hora'),
+                child: Text(localizations.changeTime),
               ),
               const SizedBox(width: 10),
-              const Text('Hora: '),
+              Text(localizations.timeLabel),
               if (_selectedTime != null)
                 Text(
-                    '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'),
+                  '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}',
+                ),
             ],
           ),
           const SizedBox(height: 12),
           ElevatedButton.icon(
             onPressed: _submit,
             icon: const Icon(Icons.check),
-            label: const Text('Guardar cambios'),
+            label: Text(localizations.saveChanges),
           ),
         ],
       ),
