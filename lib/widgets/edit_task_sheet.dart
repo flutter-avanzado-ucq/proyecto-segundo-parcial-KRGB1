@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animaciones_notificaciones/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../provider_task/task_provider.dart';
 import '../services/notification_service.dart';
 
 // Importar AppLocalizations generado
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EditTaskSheet extends StatefulWidget {
   final int index;
@@ -26,8 +26,8 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
     final task =
         Provider.of<TaskProvider>(context, listen: false).tasks[widget.index];
     _controller = TextEditingController(text: task.title);
-    _selectedDate =
-        task.dueDate; // practica: se carga la FECHA y HORA actuales de la notificación
+    _selectedDate = task
+        .dueDate; // practica: se carga la FECHA y HORA actuales de la notificación
 
     if (task.dueDate != null) {
       _selectedTime = TimeOfDay.fromDateTime(task.dueDate!);
@@ -68,8 +68,8 @@ class _EditTaskSheetState extends State<EditTaskSheet> {
         );
 
         notificationId = DateTime.now().millisecondsSinceEpoch.remainder(
-          100000,
-        );
+              100000,
+            );
 
         await NotificationService.scheduleNotification(
           title: localizations.updatedTaskReminder,

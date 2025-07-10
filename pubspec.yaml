@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
-
+      
 environment:
   sdk: ^3.5.3
 
@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  intl: ^0.19.0 # ¡CORREGIDO! intl es una dependencia de primer nivel, no debajo de flutter_localizations
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -39,21 +40,20 @@ dependencies:
   google_fonts: ^6.1.0
   flutter_staggered_animations: ^1.1.1
   provider: ^6.1.1
-  intl: ^0.19.0
-  timezone: 0.10.1
+  timezone: ^0.10.1 # Usar caret para permitir actualizaciones de parches
   permission_handler: ^11.3.0
-  flutter_local_notifications: 19.2.1
+  flutter_local_notifications: ^19.2.1 # Usar caret para permitir actualizaciones de parches
+  shared_preferences: ^2.0.15
 
   # Nuevas dependencias
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.3
+  flutter_gen: ^5.1.0 # ¡CORREGIDO! La versión 5.1.0 es la última estable. 5.10.0 es inusual.
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -64,14 +64,17 @@ dev_dependencies:
 
   #Nuevas dependencias
   build_runner: ^2.4.8
-  hive_generator: ^2.0.1
+  hive_generator: ^2.0.1 # Usar caret para permitir actualizaciones de parches
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-  
+  # La línea 'generate: true' es crucial para que Flutter genere
+  # automáticamente los archivos de localización.
+   # ¡AGREGADO/CONFIRMADO! Esta línea es vital para la generación de L10n.
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

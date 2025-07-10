@@ -1,10 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_animaciones_notificaciones/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../widgets/edit_task_sheet.dart';
 
 // Importar AppLocalizations generado
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskCard extends StatelessWidget {
   final String title;
@@ -84,16 +84,27 @@ class TaskCard extends StatelessWidget {
                     spacing: 8,
                     runSpacing: 4,
                     children: [
-                      // Integración Hive: la hora y fecha se extraen de dueDate, que es un DateTime completo
-                      // practica: aquí se muestra la FECHA extraída de dueDate (incluye la fecha programada de la notificación)
-                      Text(
-                        '${localizations.dueDate} ${DateFormat('dd/MM/yyyy').format(dueDate!)}',
-                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      // Modificación: Usar formato localizado y traducción con placeholder para la FECHA
+                      Builder(
+                        builder: (context) {
+                          final locale =
+                              Localizations.localeOf(context).languageCode;
+                          final formattedDate =
+                              DateFormat.yMMMMd(locale).format(dueDate!);
+                          final translatedDueDate =
+                              localizations.dueDate(formattedDate);
+                          return Text(
+                            translatedDueDate,
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.grey),
+                          );
+                        },
                       ),
-                      // practica: aquí se muestra la HORA extraída de dueDate (hora programada de la notificación)
+                      // La hora se mantiene igual
                       Text(
                         '${localizations.hourLabel} ${DateFormat('HH:mm').format(dueDate!)}',
-                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -110,7 +121,8 @@ class TaskCard extends StatelessWidget {
                     context: context,
                     isScrollControlled: true,
                     shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     builder: (_) => EditTaskSheet(index: index),
                   );

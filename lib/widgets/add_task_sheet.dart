@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animaciones_notificaciones/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../provider_task/task_provider.dart';
 import '../services/notification_service.dart';
 
 // Importar AppLocalizations generado
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddTaskSheet extends StatefulWidget {
   const AddTaskSheet({super.key});

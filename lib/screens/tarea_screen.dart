@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animaciones_notificaciones/generated/app_localizations.dart';
 import 'package:flutter_animaciones_notificaciones/provider_task/theme_provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import '../widgets/card_tarea.dart';
 import '../widgets/header.dart';
 import '../widgets/add_task_sheet.dart';
-import '../provider_task/task_provider.dart'; // Nuevo import
+import 'settings_screen.dart'; // Importar settings_screen.dart
+import '../provider_task/task_provider.dart';
 
 // Importar AppLocalizations generado
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -73,12 +74,33 @@ class _TaskScreenState extends State<TaskScreen>
               );
             },
           ),
+          // Nuevo IconButton para cambiar idioma/ir a SettingsScreen
+          IconButton(
+            icon: const Icon(Icons.language),
+            tooltip:
+                localizations.changeLanguage, // Usar traducción para el tooltip
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
         ],
       ),
       body: SafeArea(
         child: Column(
           children: [
             const Header(),
+            // Texto para mostrar el mensaje con pluralización dinámica
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Text(
+                localizations.pendingTasks(taskProvider.tasks.length),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
             Expanded(
               child: AnimationLimiter(
                 child: ListView.builder(
