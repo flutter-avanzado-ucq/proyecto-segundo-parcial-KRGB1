@@ -6,10 +6,8 @@ import 'package:provider/provider.dart';
 import '../widgets/card_tarea.dart';
 import '../widgets/header.dart';
 import '../widgets/add_task_sheet.dart';
-import 'settings_screen.dart'; // Importar settings_screen.dart
+import 'settings_screen.dart';
 import '../provider_task/task_provider.dart';
-
-// Importar AppLocalizations generado
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
