@@ -8,6 +8,7 @@ import '../widgets/header.dart';
 import '../widgets/add_task_sheet.dart';
 import 'settings_screen.dart';
 import '../provider_task/task_provider.dart';
+import '../provider_task/weather_provider.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -27,6 +28,12 @@ class _TaskScreenState extends State<TaskScreen>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
+
+    Future.microtask(() async {
+      // Inicializar el WeatherProvider para obtener el clima al iniciar la pantalla
+      final weatherProvider = context.read<WeatherProvider>();
+      await weatherProvider.loadWeather(20.5888, -100.3899);
+    });
   }
 
   @override

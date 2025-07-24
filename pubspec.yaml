@@ -44,12 +44,14 @@ dependencies:
   permission_handler: ^11.3.0
   flutter_local_notifications: ^19.2.1 # Usar caret para permitir actualizaciones de parches
   shared_preferences: ^2.0.15
+  http: ^1.2.0 
 
   # Nuevas dependencias
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.3
-  flutter_gen: ^5.1.0 # ¡CORREGIDO! La versión 5.1.0 es la última estable. 5.10.0 es inusual.
+  flutter_gen: ^5.1.0 
+  
 
 dev_dependencies:
   flutter_test:
