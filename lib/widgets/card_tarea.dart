@@ -1,8 +1,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animaciones_notificaciones/generated/app_localizations.dart';
+import 'package:flutter_animaciones_notificaciones/services/holiday_service.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../widgets/edit_task_sheet.dart';
+import '../provider_task/holiday_provider.dart';
 
 // Importar AppLocalizations generado
 
@@ -29,6 +32,13 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+
+    final holidays = context.watch<HolidayProvider>().holidays;
+    final isHoliday = dueDate != null &&
+        holidays!.any((h) =>
+            h.date.year == dueDate!.year &&
+            h.date.month == dueDate!.month &&
+            h.date.day == dueDate!.day);
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 500),
@@ -106,6 +116,14 @@ class TaskCard extends StatelessWidget {
                         style:
                             const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
+                      if (isHoliday)
+                        Text(
+                          localizations.holidayTag,
+                          style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                              fontWeight: FontWeight.bold),
+                        )
                     ],
                   ),
                 ),

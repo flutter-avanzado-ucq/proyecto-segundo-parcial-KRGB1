@@ -13,6 +13,7 @@ import 'provider_task/locale_provider.dart';
 import 'services/notification_service.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'provider_task/weather_provider.dart';
+import 'provider_task/holiday_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(create: (_) => WeatherProvider()),
+        ChangeNotifierProvider(create: (_) => HolidayProvider()),
       ],
       child: const MyApp(),
     ),
