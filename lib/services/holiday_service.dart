@@ -24,7 +24,8 @@ class HolidayService {
   static const String _baseUrl = 'https://date.nager.at/api/v3';
 
   /// Obtiene todos los feriados públicos del año para el país dado (por ejemplo "MX" para México)
-  Future<List<Holiday>> fetchHolidays({required int year, required String countryCode}) async {
+  Future<List<Holiday>> fetchHolidays(
+      {required int year, required String countryCode}) async {
     final url = Uri.parse('$_baseUrl/PublicHolidays/$year/$countryCode');
 
     final response = await http.get(url);

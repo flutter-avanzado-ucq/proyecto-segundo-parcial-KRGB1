@@ -1,3 +1,4 @@
+// card_tarea.dart
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animaciones_notificaciones/generated/app_localizations.dart';
@@ -6,8 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../widgets/edit_task_sheet.dart';
 import '../provider_task/holiday_provider.dart';
-
-// Importar AppLocalizations generado
 
 class TaskCard extends StatelessWidget {
   final String title;
@@ -32,10 +31,14 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    if (localizations == null) {
+      return const SizedBox.shrink();
+    }
 
     final holidays = context.watch<HolidayProvider>().holidays;
+
     final isHoliday = dueDate != null &&
-        holidays!.any((h) =>
+        holidays.any((h) =>
             h.date.year == dueDate!.year &&
             h.date.month == dueDate!.month &&
             h.date.day == dueDate!.day);
@@ -80,6 +83,7 @@ class TaskCard extends StatelessWidget {
             children: [
               Text(
                 title,
+                key: const Key('Tarea de prueba'),
                 style: TextStyle(
                   decoration: isDone ? TextDecoration.lineThrough : null,
                   fontSize: 18,
@@ -94,7 +98,6 @@ class TaskCard extends StatelessWidget {
                     spacing: 8,
                     runSpacing: 4,
                     children: [
-                      // Modificación: Usar formato localizado y traducción con placeholder para la FECHA
                       Builder(
                         builder: (context) {
                           final locale =
@@ -110,7 +113,6 @@ class TaskCard extends StatelessWidget {
                           );
                         },
                       ),
-                      // La hora se mantiene igual
                       Text(
                         '${localizations.hourLabel} ${DateFormat('HH:mm').format(dueDate!)}',
                         style:
