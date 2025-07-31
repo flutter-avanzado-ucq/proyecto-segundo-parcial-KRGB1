@@ -1,6 +1,6 @@
 // providers/weather_provider.dart
 import 'package:flutter/material.dart';
-import '../services/weather_service.dart';
+import 'package:flutter_animaciones_notificaciones/services/weather_service.dart'; // Changed to absolute import
 
 class WeatherProvider extends ChangeNotifier {
   final WeatherService _weatherService = WeatherService();

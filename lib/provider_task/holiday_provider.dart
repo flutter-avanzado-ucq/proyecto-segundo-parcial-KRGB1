@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/holiday_service.dart';
+import 'package:flutter_animaciones_notificaciones/services/holiday_service.dart'; // Changed to absolute import
 
 class HolidayProvider extends ChangeNotifier {
   final HolidayService _holidayService = HolidayService();
